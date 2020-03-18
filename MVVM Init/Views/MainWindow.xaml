@@ -1,0 +1,23 @@
+﻿<Window x:Class="MVVM_Init.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MVVM_Init"
+        mc:Ignorable="d"
+        Title="MVVM Init" 
+        Height="450" 
+        Width="800">
+    <Grid>
+        <StackPanel>
+            <StackPanel Orientation="Horizontal"
+                        Margin="5">
+                <Label Content="Project type:"/>
+                <ComboBox Width="150">
+                    <ComboBoxItem Content="WPF Project"/>
+                    <ComboBoxItem Content="Xamarin Forms"/>
+                </ComboBox>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Window>
