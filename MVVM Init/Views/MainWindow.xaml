@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="MVVM Init" 
+        Title="{Binding CurrentProject}" 
         Height="510" 
         Width="900"
         WindowStartupLocation="CenterScreen">
@@ -23,11 +23,9 @@
                     <ComboBoxItem Content="Xamarin Forms"/>
                 </ComboBox>
 
-                <Label Content="Current project: "
-                       Margin="50,0,0,0"/>
-
                 <Button Content="Select new project"
-                        Margin="25,0,0,0"/>
+                        Margin="25,0,0,0"
+                        Command="{Binding SelectProjCommand}"/>
 
             </StackPanel>
 
@@ -44,7 +42,8 @@
                            Content="MODEL" 
                            FontWeight="Bold"/>
 
-                    <DataGrid Height="354">
+                    <DataGrid Height="354"
+                              AutoGenerateColumns="False">
                     </DataGrid>
 
                     <Button Content="Add new models"/>
@@ -56,7 +55,8 @@
                            Content="VIEW" 
                            FontWeight="Bold"/>
 
-                    <DataGrid Height="354">
+                    <DataGrid Height="354"
+                              AutoGenerateColumns="False">
                     </DataGrid>
 
                     <Button Content="Add new views"/>
@@ -68,7 +68,8 @@
                            Content="VIEW-MODEL" 
                            FontWeight="Bold"/>
 
-                    <DataGrid Height="354">
+                    <DataGrid Height="354"
+                              AutoGenerateColumns="False">
                     </DataGrid>
 
                     <Button Content="Add new view-models"/>
