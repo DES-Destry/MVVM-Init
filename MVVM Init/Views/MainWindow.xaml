@@ -3,21 +3,92 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:MVVM_Init"
         mc:Ignorable="d"
         Title="MVVM Init" 
-        Height="450" 
-        Width="800">
+        Height="510" 
+        Width="900"
+        WindowStartupLocation="CenterScreen">
     <Grid>
+        
         <StackPanel>
+
             <StackPanel Orientation="Horizontal"
                         Margin="5">
+
                 <Label Content="Project type:"/>
+
                 <ComboBox Width="150">
+
                     <ComboBoxItem Content="WPF Project"/>
                     <ComboBoxItem Content="Xamarin Forms"/>
                 </ComboBox>
+
+                <Label Content="Current project: "
+                       Margin="50,0,0,0"/>
+
+                <Button Content="Select new project"
+                        Margin="25,0,0,0"/>
+
             </StackPanel>
+
+            <Grid Height="400">
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                
+                <StackPanel Orientation="Vertical">
+                    <Label HorizontalContentAlignment="Center"
+                           Content="MODEL" 
+                           FontWeight="Bold"/>
+
+                    <DataGrid Height="354">
+                    </DataGrid>
+
+                    <Button Content="Add new models"/>
+                </StackPanel>
+
+                <StackPanel Orientation="Vertical"
+                            Grid.Column="1">
+                    <Label HorizontalContentAlignment="Center"
+                           Content="VIEW" 
+                           FontWeight="Bold"/>
+
+                    <DataGrid Height="354">
+                    </DataGrid>
+
+                    <Button Content="Add new views"/>
+                </StackPanel>
+                
+                <StackPanel Orientation="Vertical"
+                            Grid.Column="2">
+                    <Label HorizontalContentAlignment="Center"
+                           Content="VIEW-MODEL" 
+                           FontWeight="Bold"/>
+
+                    <DataGrid Height="354">
+                    </DataGrid>
+
+                    <Button Content="Add new view-models"/>
+                    
+                </StackPanel>
+                
+            </Grid>
+
+            <StackPanel Orientation="Horizontal"
+                        Margin="10"
+                        HorizontalAlignment="Right">
+
+                <Button Content="Implement MVVM"/>
+
+                <Button Content="Create BaseViewModel class"
+                        Margin="25,0,0,0"/>
+
+            </StackPanel>
+
         </StackPanel>
+        
     </Grid>
 </Window>
