@@ -43,10 +43,17 @@
                            FontWeight="Bold"/>
 
                     <DataGrid Height="354"
-                              AutoGenerateColumns="False">
+                              AutoGenerateColumns="False"
+                              ItemsSource="{Binding Models}">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="File name"
+                                                Width="*"
+                                                Binding="{Binding FileName}"/>
+                        </DataGrid.Columns>
                     </DataGrid>
 
-                    <Button Content="Add new models"/>
+                    <Button Content="Add new models"
+                            Command="{Binding AddModelsCommand}"/>
                 </StackPanel>
 
                 <StackPanel Orientation="Vertical"
@@ -56,7 +63,12 @@
                            FontWeight="Bold"/>
 
                     <DataGrid Height="354"
-                              AutoGenerateColumns="False">
+                              AutoGenerateColumns="False"
+                              ItemsSource="{Binding Views}">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="File name"
+                                                Width="*"/>
+                        </DataGrid.Columns>
                     </DataGrid>
 
                     <Button Content="Add new views"/>
@@ -70,6 +82,10 @@
 
                     <DataGrid Height="354"
                               AutoGenerateColumns="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="File name"
+                                                Width="*"/>
+                        </DataGrid.Columns>
                     </DataGrid>
 
                     <Button Content="Add new view-models"/>

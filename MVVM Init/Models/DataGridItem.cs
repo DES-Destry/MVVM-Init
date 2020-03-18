@@ -6,5 +6,10 @@ namespace MVVM_Init.Models
     {
         public string FilePath { get; set; }
         public string FileName => Path.GetFileName(FilePath);
+
+        public DataGridItem(string filePath)
+        {
+            this.FilePath = filePath;
+        }
     }
 }
