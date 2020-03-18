@@ -62,13 +62,13 @@ namespace MVVM_Init.ViewModels
             }
         }
 
-        public ICommand SelectProjCommand { get; }
-        public ICommand AddModelsCommand { get; }
+        public ICommand SelectProjCommand => new Command((o) => SelectProject());
+        public ICommand AddModelsCommand => new Command((o) => AddModels());
+        public ICommand AddViewsCommand => new Command((o) => AddViews());
+        public ICommand AddViewModelsCommand => new Command((o) => AddViewModels());
 
         public MainViewModel()
         {
-            SelectProjCommand = new Command((o) => SelectProject());
-            AddModelsCommand = new Command((o) => AddModels());
         }
 
         private void SelectProject()
@@ -106,12 +106,26 @@ namespace MVVM_Init.ViewModels
                     Models.Add(new DataGridItem(file));
                 }
             }
-
         }
 
         private void AddViews()
         {
+            OpenFileDialog openFileDialog = new OpenFileDialog
+            {
+                Filter = "XAML files(*.xaml)|*.xaml",
+                Title = "Select your created views",
+                Multiselect = true
+            };
 
+            if (openFileDialog.ShowDialog() == true)
+            {
+                var files = openFileDialog.FileNames;
+
+                foreach (string file in files)
+                {
+                    Views.Add(new DataGridItem(file));
+                }
+            }
         }
 
         private void AddViewModels()
