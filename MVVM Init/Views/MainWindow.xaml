@@ -17,7 +17,8 @@
 
                 <Label Content="Project type:"/>
 
-                <ComboBox Width="150">
+                <ComboBox Width="150"
+                          SelectedItem="{Binding ProjType}">
 
                     <ComboBoxItem Content="WPF Project"/>
                     <ComboBoxItem Content="Xamarin Forms"/>
@@ -25,7 +26,8 @@
 
                 <Button Content="Select new project"
                         Margin="25,0,0,0"
-                        Command="{Binding SelectProjCommand}"/>
+                        Command="{Binding SelectProjCommand}"
+                        IsEnabled="{Binding IsSelectProjEnabled}"/>
 
             </StackPanel>
 
@@ -53,7 +55,8 @@
                     </DataGrid>
 
                     <Button Content="Add new models"
-                            Command="{Binding AddModelsCommand}"/>
+                            Command="{Binding AddModelsCommand}"
+                            IsEnabled="{Binding IsAddNewFilesEnabled}"/>
                 </StackPanel>
 
                 <StackPanel Orientation="Vertical"
@@ -67,11 +70,14 @@
                               ItemsSource="{Binding Views}">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="File name"
-                                                Width="*"/>
+                                                Width="*"
+                                                Binding="{Binding FileName}"/>
                         </DataGrid.Columns>
                     </DataGrid>
 
-                    <Button Content="Add new views"/>
+                    <Button Content="Add new views"
+                            Command="{Binding AddViewsCommand}"
+                            IsEnabled="{Binding IsAddNewFilesEnabled}"/>
                 </StackPanel>
                 
                 <StackPanel Orientation="Vertical"
@@ -81,14 +87,18 @@
                            FontWeight="Bold"/>
 
                     <DataGrid Height="354"
-                              AutoGenerateColumns="False">
+                              AutoGenerateColumns="False"
+                              ItemsSource="{Binding ViewModels}">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="File name"
-                                                Width="*"/>
+                                                Width="*"
+                                                Binding="{Binding FileName}"/>
                         </DataGrid.Columns>
                     </DataGrid>
 
-                    <Button Content="Add new view-models"/>
+                    <Button Content="Add new view-models"
+                            Command="{Binding AddViewModelsCommand}"
+                            IsEnabled="{Binding IsAddNewFilesEnabled}"/>
                     
                 </StackPanel>
                 
@@ -98,9 +108,11 @@
                         Margin="10"
                         HorizontalAlignment="Right">
 
-                <Button Content="Implement MVVM"/>
+                <Button Content="Implement MVVM"
+                        IsEnabled="{Binding IsAddNewFilesEnabled}"/>
 
                 <Button Content="Create BaseViewModel class"
+                        IsEnabled="{Binding IsAddNewFilesEnabled}"
                         Margin="25,0,0,0"/>
 
             </StackPanel>

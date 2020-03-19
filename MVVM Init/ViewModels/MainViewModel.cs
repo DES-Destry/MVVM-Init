@@ -1,13 +1,8 @@
 ﻿using Microsoft.Win32;
-using Microsoft.WindowsAPICodePack.Dialogs;
 using MVVM_Init.Models;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 
 namespace MVVM_Init.ViewModels
@@ -16,12 +11,31 @@ namespace MVVM_Init.ViewModels
     {
         private string slnPath;
         private string projType;
+        private string projName => Path.GetFileNameWithoutExtension(slnPath);
 
         private ObservableCollection<DataGridItem> models = new ObservableCollection<DataGridItem>();
         private ObservableCollection<DataGridItem> views = new ObservableCollection<DataGridItem>();
         private ObservableCollection<DataGridItem> viewModels = new ObservableCollection<DataGridItem>();
 
-        public string CurrentProject => $"MVVM Init: {Path.GetFileName(slnPath)}";
+        public string CurrentProject => $"MVVM Init: {projName}";
+
+        public string ProjType
+        {
+            get
+            {
+                return projType;
+            }
+            set
+            {
+                projType = value;
+                OnPropertyChanged();
+                OnPropertyChanged("IsSelectProjEnabled");
+            }
+        }
+
+        public bool IsSelectProjEnabled => !string.IsNullOrWhiteSpace(projType);
+
+        public bool IsAddNewFilesEnabled => !string.IsNullOrEmpty(slnPath);
 
         public ObservableCollection<DataGridItem> Models
         {
@@ -69,6 +83,7 @@ namespace MVVM_Init.ViewModels
 
         public MainViewModel()
         {
+            
         }
 
         private void SelectProject()
@@ -85,6 +100,11 @@ namespace MVVM_Init.ViewModels
                 slnPath = openFileDialog.FileName;
             }
 
+            Models.Clear();
+            Views.Clear();
+            ViewModels.Clear();
+
+            OnPropertyChanged("IsAddNewFilesEnabled");
             OnPropertyChanged("CurrentProject");
         }
 
@@ -94,14 +114,15 @@ namespace MVVM_Init.ViewModels
             {
                 Filter = "C# files(*.cs)|*.cs",
                 Title = "Select your created models",
-                Multiselect = true
+                Multiselect = true,
+                InitialDirectory = Path.GetDirectoryName(slnPath)
             };
 
             if (openFileDialog.ShowDialog() == true)
             {
                 var files = openFileDialog.FileNames;
 
-                foreach(string file in files)
+                foreach (string file in files)
                 {
                     Models.Add(new DataGridItem(file));
                 }
@@ -114,7 +135,8 @@ namespace MVVM_Init.ViewModels
             {
                 Filter = "XAML files(*.xaml)|*.xaml",
                 Title = "Select your created views",
-                Multiselect = true
+                Multiselect = true,
+                InitialDirectory = Path.GetDirectoryName(slnPath)
             };
 
             if (openFileDialog.ShowDialog() == true)
@@ -130,7 +152,22 @@ namespace MVVM_Init.ViewModels
 
         private void AddViewModels()
         {
+            OpenFileDialog openFileDialog = new OpenFileDialog()
+            {
+                Filter = "C# Files(*.cs)|*.cs",
+                Title = "Select your view-model files",
+                Multiselect = true,
+                InitialDirectory = Path.GetDirectoryName(slnPath)
+            };
 
+            if(openFileDialog.ShowDialog() == true)
+            {
+                var files = openFileDialog.FileNames;
+                foreach(string file in files)
+                {
+                    ViewModels.Add(new DataGridItem(file));
+                }
+            }
         }
 
         private void ImplementMVVM()
