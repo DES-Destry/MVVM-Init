@@ -262,11 +262,45 @@ namespace MVVM_Init.ViewModels
             {
                 if (ProjectType == ProjectType.WPF)
                 {
-                    File.Create(core + "\\Views\\.cs").Close();
+                    File.Create(core + "\\Views\\MainWindow.xaml").Close();
+                    File.Create(core + "\\Views\\MainWindow.xaml.cs").Close();
+
+                    string xamlContent = Resources.MainWindow;
+                    string csContent = Resources.MainWindow_xaml;
+
+                    xamlContent = xamlContent.Replace("x:Class=\"Views.MainWindow\"", $"x:Class=\"{ProjName}.Views.MainWindow\"");
+                    csContent = csContent.Replace("using ViewModels;", $"using {ProjName}.ViewModels");
+                    csContent = csContent.Replace("namespace Views", $"namespace {ProjName}.Views");
+
+                    using (StreamWriter sw = new StreamWriter(core + "\\Views\\MainWindow.xaml", false))
+                    {
+                        sw.Write(xamlContent);
+                    }
+                    using (StreamWriter sw = new StreamWriter(core + "\\Views\\MainWindow.xaml.cs", false))
+                    {
+                        sw.Write(csContent);
+                    }
                 }
                 else if (ProjectType == ProjectType.XamarinForms)
                 {
+                    File.Create(core + "\\Views\\MainPage.xaml");
+                    File.Create(core + "\\Views\\MainPage.xaml.cs");
 
+                    string xamlContent = Resources.MainPage;
+                    string csContent = Resources.MainPage_xaml;
+
+                    xamlContent = xamlContent.Replace("x:Class=\"Views.MainPage\"", $"x:Class=\"{ProjName}.Views.MainPage\"");
+                    csContent = csContent.Replace("using ViewModels;", $"using {ProjName}.ViewModels");
+                    csContent = csContent.Replace("namespace Views", $"namespace {ProjName}.Views");
+
+                    using (StreamWriter sw = new StreamWriter(core + "\\Views\\MainPage.xaml", false))
+                    {
+                        sw.Write(xamlContent);
+                    }
+                    using (StreamWriter sw = new StreamWriter(core + "\\Views\\MainPage.xaml.cs", false))
+                    {
+                        sw.Write(csContent);
+                    }
                 }
             }
             else
