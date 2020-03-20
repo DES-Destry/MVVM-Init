@@ -114,6 +114,12 @@
 
                 <Button Content="Create BaseViewModel class"
                         IsEnabled="{Binding IsAddNewFilesEnabled}"
+                        Command="{Binding BaseViewModelCommandc}"
+                        Margin="25,0,0,0"/>
+
+                <Button Content="Create BaseCommand class"
+                        Command="{Binding BaseViewModelCommand}"
+                        IsEnabled="{Binding IsAddNewFilesEnabled}"
                         Margin="25,0,0,0"/>
 
             </StackPanel>

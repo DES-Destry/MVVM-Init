@@ -107,6 +107,8 @@ namespace MVVM_Init.ViewModels
         public ICommand AddViewsCommand => new Command((o) => AddViews());
         public ICommand AddViewModelsCommand => new Command((o) => AddViewModels());
         public ICommand ImplementMVVMCommand => new Command((o) => ImplementMVVM());
+        public ICommand BaseViewModelCommand => new Command((o) => CreateBaseViewModelClass());
+        public ICommand CreateBaseCommand => new Command((o) => CreateBaseCommandClass());
 
         public MainViewModel()
         {
@@ -359,15 +361,7 @@ namespace MVVM_Init.ViewModels
 
             if (viewModels.Count == 0)
             {
-                File.Create(core + "\\ViewModels\\BaseViewModel.cs").Close();
-
-                string content = Resources.BaseViewModel;
-                content = content.Replace("namespace ViewModels", $"namespace {ProjName}.ViewModels");
-
-                using (StreamWriter sw = new StreamWriter(core + "\\ViewModels\\BaseViewModel.cs", false))
-                {
-                    sw.Write(content);
-                }
+                CreateBaseViewModelClass();
             }
             else
             {
@@ -437,12 +431,46 @@ namespace MVVM_Init.ViewModels
 
         private void CreateBaseViewModelClass()
         {
+            string core = GetProjCoreDirectory();
 
+            if (File.Exists(core + "\\ViewModels\\BaseViewModel.cs"))
+            {
+                MessageBox.Show("This file already exist!", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            else
+            {
+                File.Create(core + "\\ViewModels\\BaseViewModel.cs").Close();
+
+                string content = Resources.BaseViewModel;
+                content = content.Replace("namespace ViewModels", $"namespace {ProjName}.ViewModels");
+
+                using (StreamWriter sw = new StreamWriter(core + "\\ViewModels\\BaseViewModel.cs", false))
+                {
+                    sw.Write(content);
+                }
+            }
         }
 
         private void CreateBaseCommandClass()
         {
+            string core = GetProjCoreDirectory();
 
+            if (File.Exists(core + "\\Models\\BaseCommand.cs"))
+            {
+                MessageBox.Show("This file already exist!", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            else
+            {
+                File.Create(core + "\\Models\\BaseCommand.cs").Close();
+
+                string content = Resources.BaseCommand;
+                content = content.Replace("namespace Models", $"namespace {ProjName}.Models");
+
+                using (StreamWriter sw = new StreamWriter(core + "\\Models\\BaseCommand.cs", false))
+                {
+                    sw.Write(content);
+                }
+            }
         }
 
         private string GetProjCoreDirectory()
