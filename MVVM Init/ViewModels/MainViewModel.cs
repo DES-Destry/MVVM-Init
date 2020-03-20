@@ -13,7 +13,7 @@ namespace MVVM_Init.ViewModels
     {
         private string slnPath;
         private string projType;
-        private string ProjName => Path.GetFileNameWithoutExtension(slnPath).Replace(" ", "_");
+        private string ProjName => Path.GetFileNameWithoutExtension(slnPath)?.Replace(" ", "_");
         private ProjectType ProjectType
         {
             get
@@ -385,7 +385,7 @@ namespace MVVM_Init.ViewModels
             if (ProjectType == ProjectType.WPF)
             {
                 string appContent = "";
-                using (StreamReader sr = new StreamReader(core + "App.xaml"))
+                using (StreamReader sr = new StreamReader(core + "\\App.xaml"))
                 {
                     appContent = sr.ReadToEnd();
                 }
@@ -400,7 +400,7 @@ namespace MVVM_Init.ViewModels
 
                 appContent = appContent.Replace($"StartupUri=\"{startupUri}\"", $"StartupUri=\"Views/{startupUri}\"");
 
-                using (StreamWriter sw = new StreamWriter(core + "App.xaml", false))
+                using (StreamWriter sw = new StreamWriter(core + "\\App.xaml", false))
                 {
                     sw.Write(appContent);
                 }
@@ -472,14 +472,14 @@ namespace MVVM_Init.ViewModels
             if (ProjectType == ProjectType.WPF)
             {
                 initialDirectory = initialDirectory.Replace(Path.GetFileName(slnPath), "");
-                initialDirectory += ProjName;
+                initialDirectory += ProjName.Replace("_", " ");
 
                 return initialDirectory;
             }
             else if (ProjectType == ProjectType.XamarinForms)
             {
                 initialDirectory = initialDirectory.Replace(Path.GetFileName(slnPath), "");
-                initialDirectory += $"{ProjName}\\{ProjName}";
+                initialDirectory += $"{ProjName.Replace("_", " ")}\\{ProjName.Replace("_", " ")}";
 
                 return initialDirectory;
             }
