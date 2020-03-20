@@ -65,6 +65,7 @@
     </Compile>
     <Compile Include="Models\Command.cs" />
     <Compile Include="Models\DataGridItem.cs" />
+    <Compile Include="Models\ProjectType.cs" />
     <Compile Include="ViewModels\BaseViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="Views\MainWindow.xaml.cs">

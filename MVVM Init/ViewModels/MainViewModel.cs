@@ -1,5 +1,6 @@
 ﻿using Microsoft.Win32;
 using MVVM_Init.Models;
+using MVVM_Init.Properties;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -13,6 +14,24 @@ namespace MVVM_Init.ViewModels
         private string slnPath;
         private string projType;
         private string ProjName => Path.GetFileNameWithoutExtension(slnPath).Replace(" ", "_");
+        private ProjectType ProjectType 
+        {
+            get
+            {
+                if (projType == "System.Windows.Controls.ComboBoxItem: WPF Project")
+                {
+                    return ProjectType.WPF;
+                }
+                else if (projType == "System.Windows.Controls.ComboBoxItem: Xamarin Forms")
+                {
+                    return ProjectType.XamarinForms;
+                }
+                else
+                {
+                    return ProjectType.Other;
+                }
+            }
+        }
 
 
         private ObservableCollection<DataGridItem> models = new ObservableCollection<DataGridItem>();
@@ -204,7 +223,15 @@ namespace MVVM_Init.ViewModels
 
             if (models.Count == 0)
             {
-                File.Create(core + "\\Models\\TestModel(delete this).cs").Close();
+                File.Create(core + "\\Models\\BaseCommand.cs").Close();
+
+                string content = Resources.BaseCommand;
+                content = content.Replace("namespace Models", $"namespace {ProjName}.Models");
+
+                using (StreamWriter sw = new StreamWriter(core + "\\Models\\BaseCommand.cs", false))
+                {
+                    sw.Write(content);
+                }
             }
             else
             {
@@ -233,7 +260,14 @@ namespace MVVM_Init.ViewModels
 
             if (views.Count == 0)
             {
-                File.Create(core + "\\Views\\TestView(delete this).cs").Close();
+                if (ProjectType == ProjectType.WPF)
+                {
+                    File.Create(core + "\\Views\\.cs").Close();
+                }
+                else if (ProjectType == ProjectType.XamarinForms)
+                {
+
+                }
             }
             else
             {
@@ -317,7 +351,7 @@ namespace MVVM_Init.ViewModels
 
 
 
-            if (projType == "System.Windows.Controls.ComboBoxItem: WPF Project")
+            if (ProjectType == ProjectType.WPF)
             {
                 string appContent = "";
                 using (StreamReader sr = new StreamReader(core + "App.xaml"))
@@ -340,7 +374,7 @@ namespace MVVM_Init.ViewModels
                     sw.Write(appContent);
                 }
             }
-            else if (projType == "System.Windows.Controls.ComboBoxItem: Xamarin Forms")
+            else if (ProjectType == ProjectType.XamarinForms)
             {
                 string appContent = "";
                 using (StreamReader sr = new StreamReader(core + "\\App.xaml.cs"))
@@ -361,18 +395,23 @@ namespace MVVM_Init.ViewModels
 
         }
 
+        private void CreateBaseCommandClass()
+        {
+
+        }
+
         private string GetProjCoreDirectory()
         {
             string initialDirectory = slnPath;
 
-            if (projType == "System.Windows.Controls.ComboBoxItem: WPF Project")
+            if (ProjectType == ProjectType.WPF)
             {
                 initialDirectory = initialDirectory.Replace(Path.GetFileName(slnPath), "");
                 initialDirectory += ProjName;
 
                 return initialDirectory;
             }
-            else if (projType == "System.Windows.Controls.ComboBoxItem: Xamarin Forms")
+            else if (ProjectType == ProjectType.XamarinForms)
             {
                 initialDirectory = initialDirectory.Replace(Path.GetFileName(slnPath), "");
                 initialDirectory += $"{ProjName}\\{ProjName}";
