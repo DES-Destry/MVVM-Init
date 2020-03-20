@@ -49,6 +49,11 @@ namespace MVVM_Init.ViewModels
             set
             {
                 projType = value;
+
+                Models.Clear();
+                Views.Clear();
+                ViewModels.Clear();
+
                 OnPropertyChanged();
                 OnPropertyChanged("IsSelectProjEnabled");
             }
@@ -354,7 +359,15 @@ namespace MVVM_Init.ViewModels
 
             if (viewModels.Count == 0)
             {
-                File.Create(core + "\\ViewModels\\TestViewModel(delete this).cs").Close();
+                File.Create(core + "\\ViewModels\\BaseViewModel.cs").Close();
+
+                string content = Resources.BaseViewModel;
+                content = content.Replace("namespace ViewModels", $"namespace {ProjName}.ViewModels");
+
+                using (StreamWriter sw = new StreamWriter(core + "\\ViewModels\\BaseViewModel.cs", false))
+                {
+                    sw.Write(content);
+                }
             }
             else
             {
@@ -381,8 +394,6 @@ namespace MVVM_Init.ViewModels
                     File.Move(viewModel.FilePath, endPath);
                 }
             }
-
-
 
 
             if (ProjectType == ProjectType.WPF)
