@@ -109,7 +109,8 @@
                         HorizontalAlignment="Right">
 
                 <Button Content="Implement MVVM"
-                        IsEnabled="{Binding IsAddNewFilesEnabled}"/>
+                        IsEnabled="{Binding IsAddNewFilesEnabled}"
+                        Command="{Binding ImplementMVVMCommand}"/>
 
                 <Button Content="Create BaseViewModel class"
                         IsEnabled="{Binding IsAddNewFilesEnabled}"

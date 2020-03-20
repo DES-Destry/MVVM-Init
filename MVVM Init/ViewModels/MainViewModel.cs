@@ -2,6 +2,8 @@
 using MVVM_Init.Models;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Text.RegularExpressions;
+using System.Windows;
 using System.Windows.Input;
 
 namespace MVVM_Init.ViewModels
@@ -10,7 +12,7 @@ namespace MVVM_Init.ViewModels
     {
         private string slnPath;
         private string projType;
-        private string ProjName => Path.GetFileNameWithoutExtension(slnPath);
+        private string ProjName => Path.GetFileNameWithoutExtension(slnPath).Replace(" ", "_");
 
 
         private ObservableCollection<DataGridItem> models = new ObservableCollection<DataGridItem>();
@@ -80,6 +82,7 @@ namespace MVVM_Init.ViewModels
         public ICommand AddModelsCommand => new Command((o) => AddModels());
         public ICommand AddViewsCommand => new Command((o) => AddViews());
         public ICommand AddViewModelsCommand => new Command((o) => AddViewModels());
+        public ICommand ImplementMVVMCommand => new Command((o) => ImplementMVVM());
 
         public MainViewModel()
         {
@@ -115,7 +118,7 @@ namespace MVVM_Init.ViewModels
                 Filter = "C# files(*.cs)|*.cs",
                 Title = "Select your created models",
                 Multiselect = true,
-                InitialDirectory = GetInitialDirectory()
+                InitialDirectory = GetProjCoreDirectory()
             };
 
             if (openFileDialog.ShowDialog() == true)
@@ -136,7 +139,7 @@ namespace MVVM_Init.ViewModels
                 Filter = "XAML files(*.xaml)|*.xaml",
                 Title = "Select your created views",
                 Multiselect = true,
-                InitialDirectory = GetInitialDirectory()
+                InitialDirectory = GetProjCoreDirectory()
             };
 
             if (openFileDialog.ShowDialog() == true)
@@ -157,7 +160,7 @@ namespace MVVM_Init.ViewModels
                 Filter = "C# Files(*.cs)|*.cs",
                 Title = "Select your view-model files",
                 Multiselect = true,
-                InitialDirectory = GetInitialDirectory()
+                InitialDirectory = GetProjCoreDirectory()
             };
 
             if (openFileDialog.ShowDialog() == true)
@@ -173,20 +176,192 @@ namespace MVVM_Init.ViewModels
         private void ImplementMVVM()
         {
             ImplementFiles();
-            CSProjFileEdit();
+
+            MessageBox.Show("MVVM Implementated successful!", "Success!", MessageBoxButton.OK, MessageBoxImage.Information);
+
+            Models.Clear();
+            ViewModels.Clear();
+            Views.Clear();
         }
 
         private void ImplementFiles()
         {
+            string core = GetProjCoreDirectory();
 
+            if (!Directory.Exists(core + "\\Models"))
+            {
+                Directory.CreateDirectory(core + "\\Models");
+            }
+            if (!Directory.Exists(core + "\\Views"))
+            {
+                Directory.CreateDirectory(core + "\\Views");
+            }
+            if (!Directory.Exists(core + "\\ViewModels"))
+            {
+                Directory.CreateDirectory(core + "\\ViewModels");
+            }
+
+
+            if (models.Count == 0)
+            {
+                File.Create(core + "\\Models\\TestModel(delete this).cs").Close();
+            }
+            else
+            {
+                foreach (DataGridItem model in models)
+                {
+                    string endPath = model.FilePath;
+                    endPath = endPath.Replace(model.FileName, "");
+                    endPath += $"Models\\{model.FileName}";
+
+                    string modelContent = "";
+                    using (StreamReader sr = new StreamReader(model.FilePath))
+                    {
+                        modelContent = sr.ReadToEnd();
+                    }
+
+                    modelContent = modelContent.Replace($"namespace {ProjName}", $"namespace {ProjName}.Models");
+
+                    using (StreamWriter sw = new StreamWriter(model.FilePath, false))
+                    {
+                        sw.Write(modelContent);
+                    }
+
+                    File.Move(model.FilePath, endPath);
+                }
+            }
+
+            if (views.Count == 0)
+            {
+                File.Create(core + "\\Views\\TestView(delete this).cs").Close();
+            }
+            else
+            {
+                foreach (DataGridItem view in views)
+                {
+                    string endPath = view.FilePath;
+                    endPath = endPath.Replace(view.FileName, "");
+                    endPath += $"Views\\{view.FileName}";
+
+                    string viewContent = "";
+                    using (StreamReader sr = new StreamReader(view.FilePath))
+                    {
+                        viewContent = sr.ReadToEnd();
+                    }
+
+                    viewContent = viewContent.Replace($"x:Class=\"{ProjName}.{Path.GetFileNameWithoutExtension(view.FilePath)}\"", $"x:Class=\"{ProjName}.Views.{Path.GetFileNameWithoutExtension(view.FilePath)}\"");
+
+                    using (StreamWriter sw = new StreamWriter(view.FilePath, false))
+                    {
+                        sw.Write(viewContent);
+                    }
+
+                    File.Move(view.FilePath, endPath);
+
+
+                    view.FilePath += ".cs";
+
+
+                    endPath = view.FilePath;
+                    endPath = endPath.Replace(view.FileName, "");
+                    endPath += $"Views\\{view.FileName}";
+
+                    viewContent = "";
+                    using (StreamReader sr = new StreamReader(view.FilePath))
+                    {
+                        viewContent = sr.ReadToEnd();
+                    }
+
+                    viewContent = viewContent.Replace($"namespace {ProjName}", $"namespace {ProjName}.Views");
+
+                    using (StreamWriter sw = new StreamWriter(view.FilePath, false))
+                    {
+                        sw.WriteLine($"using {ProjName}.ViewModels;");
+                        sw.Write(viewContent);
+                    }
+
+                    File.Move(view.FilePath, endPath);
+                }
+            }
+
+            if (viewModels.Count == 0)
+            {
+                File.Create(core + "\\ViewModels\\TestViewModel(delete this).cs").Close();
+            }
+            else
+            {
+                foreach (DataGridItem viewModel in viewModels)
+                {
+                    string endPath = viewModel.FilePath;
+                    endPath = endPath.Replace(viewModel.FileName, "");
+                    endPath += $"ViewModels\\{viewModel.FileName}";
+
+                    string viewModelContent = "";
+                    using (StreamReader sr = new StreamReader(viewModel.FilePath))
+                    {
+                        viewModelContent = sr.ReadToEnd();
+                    }
+
+                    viewModelContent = viewModelContent.Replace($"namespace {ProjName}", $"namespace {ProjName}.ViewModels");
+
+                    using (StreamWriter sw = new StreamWriter(viewModel.FilePath, false))
+                    {
+                        sw.WriteLine($"using {ProjName}.Models;");
+                        sw.Write(viewModelContent);
+                    }
+
+                    File.Move(viewModel.FilePath, endPath);
+                }
+            }
+
+
+
+
+            if (projType == "System.Windows.Controls.ComboBoxItem: WPF Project")
+            {
+                string appContent = "";
+                using (StreamReader sr = new StreamReader(core + "App.xaml"))
+                {
+                    appContent = sr.ReadToEnd();
+                }
+
+                string startupUri = "";
+                Match match = Regex.Match(appContent, $"StartupUri=\"(.*)\" ");
+
+                if (match.Groups.Count > 0)
+                {
+                    startupUri = match.Groups[0].Value;
+                }
+
+                appContent = appContent.Replace($"StartupUri=\"{startupUri}\"", $"StartupUri=\"Views/{startupUri}\"");
+
+                using (StreamWriter sw = new StreamWriter(core + "App.xaml", false))
+                {
+                    sw.Write(appContent);
+                }
+            }
+            else if (projType == "System.Windows.Controls.ComboBoxItem: Xamarin Forms")
+            {
+                string appContent = "";
+                using (StreamReader sr = new StreamReader(core + "\\App.xaml.cs"))
+                {
+                    appContent = sr.ReadToEnd();
+                }
+
+                using (StreamWriter sw = new StreamWriter(core + "\\App.xaml.cs", false))
+                {
+                    sw.WriteLine($"using {ProjName}.Views;");
+                    sw.Write(appContent);
+                }
+            }
         }
 
-        private void CSProjFileEdit()
+        private void CreateBaseViewModelClass()
         {
 
         }
 
-        private string GetInitialDirectory()
+        private string GetProjCoreDirectory()
         {
             string initialDirectory = slnPath;
 
