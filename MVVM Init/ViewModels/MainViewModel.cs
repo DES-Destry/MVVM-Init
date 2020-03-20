@@ -14,7 +14,7 @@ namespace MVVM_Init.ViewModels
         private string slnPath;
         private string projType;
         private string ProjName => Path.GetFileNameWithoutExtension(slnPath).Replace(" ", "_");
-        private ProjectType ProjectType 
+        private ProjectType ProjectType
         {
             get
             {
@@ -244,9 +244,7 @@ namespace MVVM_Init.ViewModels
             {
                 foreach (DataGridItem model in models)
                 {
-                    string endPath = model.FilePath;
-                    endPath = endPath.Replace(model.FileName, "");
-                    endPath += $"Models\\{model.FileName}";
+                    string endPath = core + $"\\Model\\{model.FileName}";
 
                     string modelContent = "";
                     using (StreamReader sr = new StreamReader(model.FilePath))
@@ -314,9 +312,7 @@ namespace MVVM_Init.ViewModels
             {
                 foreach (DataGridItem view in views)
                 {
-                    string endPath = view.FilePath;
-                    endPath = endPath.Replace(view.FileName, "");
-                    endPath += $"Views\\{view.FileName}";
+                    string endPath = core + $"\\Views\\{view.FileName}";
 
                     string viewContent = "";
                     using (StreamReader sr = new StreamReader(view.FilePath))
@@ -337,9 +333,7 @@ namespace MVVM_Init.ViewModels
                     view.FilePath += ".cs";
 
 
-                    endPath = view.FilePath;
-                    endPath = endPath.Replace(view.FileName, "");
-                    endPath += $"Views\\{view.FileName}";
+                    endPath = core + $"\\Views\\{view.FileName}";
 
                     viewContent = "";
                     using (StreamReader sr = new StreamReader(view.FilePath))
@@ -367,9 +361,7 @@ namespace MVVM_Init.ViewModels
             {
                 foreach (DataGridItem viewModel in viewModels)
                 {
-                    string endPath = viewModel.FilePath;
-                    endPath = endPath.Replace(viewModel.FileName, "");
-                    endPath += $"ViewModels\\{viewModel.FileName}";
+                    string endPath = core + $"\\ViewModels\\{viewModel.FileName}";
 
                     string viewModelContent = "";
                     using (StreamReader sr = new StreamReader(viewModel.FilePath))
