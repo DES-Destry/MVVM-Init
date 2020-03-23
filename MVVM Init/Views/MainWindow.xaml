@@ -118,7 +118,7 @@
                         Margin="25,0,0,0"/>
 
                 <Button Content="Create BaseCommand class"
-                        Command="{Binding BaseViewModelCommand}"
+                        Command="{Binding CreateBaseCommand}"
                         IsEnabled="{Binding IsAddNewFilesEnabled}"
                         Margin="25,0,0,0"/>
 

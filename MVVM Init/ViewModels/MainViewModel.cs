@@ -3,9 +3,11 @@ using MVVM_Init.Models;
 using MVVM_Init.Properties;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Input;
+using System.Xml.Linq;
 
 namespace MVVM_Init.ViewModels
 {
@@ -109,11 +111,6 @@ namespace MVVM_Init.ViewModels
         public ICommand ImplementMVVMCommand => new Command((o) => ImplementMVVM());
         public ICommand BaseViewModelCommand => new Command((o) => CreateBaseViewModelClass());
         public ICommand CreateBaseCommand => new Command((o) => CreateBaseCommandClass());
-
-        public MainViewModel()
-        {
-
-        }
 
         private void SelectProject()
         {
@@ -230,15 +227,7 @@ namespace MVVM_Init.ViewModels
 
             if (models.Count == 0)
             {
-                File.Create(core + "\\Models\\BaseCommand.cs").Close();
-
-                string content = Resources.BaseCommand;
-                content = content.Replace("namespace Models", $"namespace {ProjName}.Models");
-
-                using (StreamWriter sw = new StreamWriter(core + "\\Models\\BaseCommand.cs", false))
-                {
-                    sw.Write(content);
-                }
+                CreateBaseCommandClass();
             }
             else
             {
@@ -260,6 +249,22 @@ namespace MVVM_Init.ViewModels
                     }
 
                     File.Move(model.FilePath, endPath);
+
+                    if (ProjectType == ProjectType.WPF)
+                    {
+                        string csprojContent = "";
+                        using (StreamReader sr = new StreamReader(core + $"\\{ProjName.Replace("_", " ")}.csproj"))
+                        {
+                            csprojContent = sr.ReadToEnd();
+                        }
+
+                        csprojContent = csprojContent.Replace($"Compile Include=\"{model.FileName}\"", $"Compile Include=\"Models\\{model.FileName}\"");
+
+                        using (StreamWriter sw = new StreamWriter(core + $"\\{ProjName.Replace("_", " ")}.csproj", false))
+                        {
+                            sw.Write(csprojContent);
+                        }
+                    }
                 }
             }
 
@@ -284,6 +289,49 @@ namespace MVVM_Init.ViewModels
                     using (StreamWriter sw = new StreamWriter(core + "\\Views\\MainWindow.xaml.cs", false))
                     {
                         sw.Write(csContent);
+                    }
+
+                    bool isPageAdded = false;
+
+                    XDocument xdoc = XDocument.Load(core + $"\\{ProjName.Replace("_", " ")}.csproj");
+                    var itemGroups = xdoc.Root.Descendants().Where(node => node.Name.LocalName.Equals("ItemGroup"));
+
+                    foreach (XElement itemGroup in itemGroups)
+                    {
+                        var compiles = itemGroup.Descendants().Where(node => node.Name.LocalName.Equals("Compile")).ToList();
+                        var pages = itemGroup.Descendants().Where(node => node.Name.LocalName.Equals("Page")).ToList();
+
+                        if (compiles.Count != 0 || pages.Count != 0)
+                        {
+                            XElement compile = new XElement("Compile");
+
+                            XAttribute attribute = new XAttribute("Include", "Views\\MainWindow.xaml.cs");
+                            XElement dependentUpon = new XElement("DependentUpon", "MainWindow.xaml");
+                            XElement subType = new XElement("SubType", "Code");
+
+                            compile.Add(attribute);
+                            compile.Add(dependentUpon);
+                            compile.Add(subType);
+
+                            XElement page = new XElement("Page");
+
+                            attribute = new XAttribute("Include", "Views\\MainWindow.xaml");
+                            XElement generator = new XElement("Generator", "MSBuils:Compile");
+                            subType = new XElement("SubType", "Designer");
+
+                            page.Add(attribute);
+                            page.Add(generator);
+                            page.Add(subType);
+
+                            itemGroup.Add(page);
+                            itemGroup.Add(compile);
+
+                            xdoc.Save(core + $"\\{ProjName.Replace("_", " ")}.csproj");
+
+                            isPageAdded = true;
+
+                            break;
+                        }
                     }
                 }
                 else if (ProjectType == ProjectType.XamarinForms)
@@ -328,6 +376,23 @@ namespace MVVM_Init.ViewModels
                     }
 
                     File.Move(view.FilePath, endPath);
+
+                    if (ProjectType == ProjectType.WPF)
+                    {
+                        string csprojContent = "";
+                        using (StreamReader sr = new StreamReader(core + $"\\{ProjName.Replace("_", " ")}.csproj"))
+                        {
+                            csprojContent = sr.ReadToEnd();
+                        }
+
+                        csprojContent = csprojContent.Replace($"Page Include=\"{view.FileName}\"", $"Page Include=\"Views\\{view.FileName}\"");
+                        csprojContent = csprojContent.Replace($"Compile Include=\"{view.FileName}.cs\"", $"Compile Include=\"Views\\{view.FileName}.cs\"");
+
+                        using (StreamWriter sw = new StreamWriter(core + $"\\{ProjName.Replace("_", " ")}.csproj", false))
+                        {
+                            sw.Write(csprojContent);
+                        }
+                    }
 
 
                     view.FilePath += ".cs";
@@ -378,6 +443,22 @@ namespace MVVM_Init.ViewModels
                     }
 
                     File.Move(viewModel.FilePath, endPath);
+
+                    if (ProjectType == ProjectType.WPF)
+                    {
+                        string csprojContent = "";
+                        using (StreamReader sr = new StreamReader(core + $"\\{ProjName.Replace("_", " ")}.csproj"))
+                        {
+                            csprojContent = sr.ReadToEnd();
+                        }
+
+                        csprojContent = csprojContent.Replace($"Compile Include=\"{viewModel.FileName}\"", $"Compile Include=\"ViewModels\\{viewModel.FileName}\"");
+
+                        using (StreamWriter sw = new StreamWriter(core + $"\\{ProjName.Replace("_", " ")}.csproj", false))
+                        {
+                            sw.Write(csprojContent);
+                        }
+                    }
                 }
             }
 
@@ -440,6 +521,36 @@ namespace MVVM_Init.ViewModels
                 {
                     sw.Write(content);
                 }
+
+
+                if (ProjectType == ProjectType.WPF)
+                {
+                    bool isCompileAdded = false;
+
+                    XDocument xdoc = XDocument.Load(core + $"\\{ProjName.Replace("_", " ")}.csproj");
+                    var itemGroups = xdoc.Root.Descendants().Where(node => node.Name.LocalName.Equals("ItemGroup"));
+
+                    foreach (XElement itemGroup in itemGroups)
+                    {
+                        var compiles = itemGroup.Descendants().Where(node => node.Name.LocalName.Equals("Compile")).ToList();
+                        var pages = itemGroup.Descendants().Where(node => node.Name.LocalName.Equals("Page")).ToList();
+
+                        if (compiles.Count != 0 || pages.Count != 0)
+                        {
+                            XElement compile = new XElement("Compile");
+                            XAttribute attribute = new XAttribute("Include", "ViewModels\\BaseViewModel.cs");
+
+                            compile.Add(attribute);
+                            itemGroup.Add(compile);
+
+                            xdoc.Save(core + $"\\{ProjName.Replace("_", " ")}.csproj");
+
+                            isCompileAdded = true;
+
+                            break;
+                        }
+                    }
+                }
             }
         }
 
@@ -461,6 +572,36 @@ namespace MVVM_Init.ViewModels
                 using (StreamWriter sw = new StreamWriter(core + "\\Models\\BaseCommand.cs", false))
                 {
                     sw.Write(content);
+                }
+
+
+                if (ProjectType == ProjectType.WPF)
+                {
+                    bool isCompileAdded = false;
+
+                    XDocument xdoc = XDocument.Load(core + $"\\{ProjName.Replace("_", " ")}.csproj");
+                    var itemGroups = xdoc.Root.Descendants().Where(x => x.Name.LocalName.Equals("ItemGroup"));
+
+                    foreach (var itemGroup in itemGroups) 
+                    {
+                        var compiles = itemGroup.Descendants().Where(x => x.Name.LocalName.Equals("Compile")).ToList();
+                        var pages = itemGroup.Descendants().Where(x => x.Name.LocalName.Equals("Page")).ToList();
+
+                        if (compiles.Count != 0 || pages.Count != 0)
+                        {
+                            XElement compile = new XElement("Compile");
+                            XAttribute attribute = new XAttribute("Include", "Models\\BaseCommand.cs");
+
+                            compile.Add(attribute);
+                            itemGroup.Add(compile);
+
+                            xdoc.Save(core + $"\\{ProjName.Replace("_", " ")}.csproj");
+
+                            isCompileAdded = true;
+
+                            break;
+                        }
+                    }
                 }
             }
         }
